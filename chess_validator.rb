@@ -1,7 +1,14 @@
-# TODO: FIX WHEN SOME PIECE TRESPASS OTHER
 module Chess
   class Cordinate
     attr_reader :column, :row
+
+    def margin_of_board?
+      column == 0 || row == 0 || column == 7 || row == 7
+    end
+
+    def out_of_board?
+      column < 0 || row < 0 || column > 7 || row > 7
+    end
 
     def initialize(row, column)
       self.column = column
@@ -25,6 +32,44 @@ module Chess
       code += row.hash
       code
     end
+
+    def step_right!
+      self.column += 1
+    end
+
+    def step_left!
+      self.column -= 1
+    end
+
+
+    def step_up!
+      self.row   += 1
+    end
+
+    def step_down!
+      self.row   -= 1
+    end
+
+    def step_left_up_diagonal!
+      self.row    -= 1
+      self.column -= 1
+    end
+
+    def step_right_up_diagonal!
+      self.row    -= 1
+      self.column += 1
+    end
+
+    def step_left_down_diagonal!
+      self.row    +=1
+      self.column -=1
+    end
+
+    def step_right_down_diagonal!
+      self.row    += 1
+      self.column += 1
+    end
+
 
     private
       attr_writer :row, :column
@@ -149,9 +194,152 @@ module Chess
     end
   end
 
+  module MoveCalculator
+
+    def calculate_moves_to_left(current_position, board)
+      moves = []
+      position = current_position.clone
+      position.step_left!
+      unless position.out_of_board?
+        while (!position.margin_of_board? && board.piece_at(position).nil?)
+          cordinate = position.clone
+          moves.push(cordinate)
+          position.step_left!
+        end
+        if !position.out_of_board? && position.margin_of_board? && board.piece_at(position).nil? || !board.piece_at(position).nil?  && board.piece_at(position).color != self.color
+          moves.push(position)
+        end
+      end
+      moves
+    end
+    
+    def calculate_moves_to_right(current_position,board)
+      moves = []
+      position = current_position.clone
+      position.step_right!
+      unless position.out_of_board?
+        while (!position.margin_of_board? && board.piece_at(position).nil?)
+          cordinate = position.clone
+          moves.push(cordinate)
+          position.step_right!
+        end
+        if !position.out_of_board? && position.margin_of_board? && board.piece_at(position).nil? || !board.piece_at(position).nil?  && board.piece_at(position).color != self.color
+          moves.push(position)
+        end
+      end
+      moves
+    end
+
+    def calculate_moves_to_up(current_position,board)
+      moves = []
+      position = current_position.clone
+      position.step_up!
+      unless position.out_of_board?
+        while (!position.margin_of_board? && board.piece_at(position).nil?)
+          cordinate = position.clone
+          moves.push(cordinate)
+          position.step_up!
+        end
+        if !position.out_of_board? && position.margin_of_board? && board.piece_at(position).nil? || !board.piece_at(position).nil?  && board.piece_at(position).color != self.color
+          moves.push(position)
+        end
+      end
+      moves
+    end
+
+    def calculate_moves_to_down(current_position,board)
+      moves = []
+      position = current_position.clone
+      position.step_down! 
+      unless position.out_of_board?
+        while (!position.margin_of_board? && board.piece_at(position).nil?)
+          cordinate = position.clone
+          moves.push(cordinate)
+          position.step_down!
+        end
+        if !position.out_of_board? && position.margin_of_board? && board.piece_at(position).nil? || !board.piece_at(position).nil?  && board.piece_at(position).color != self.color
+          moves.push(position)
+        end
+      end
+      moves
+    end
+
+    def calculate_moves_to_left_up_diagonal(current_position,board)
+      moves = []
+      position = current_position.clone
+      position.step_left_up_diagonal!
+      unless position.out_of_board?
+        while (!position.margin_of_board? && board.piece_at(position).nil?)
+          cordinate = position.clone
+          moves.push(cordinate)
+          position.step_left_up_diagonal!
+        end
+        if !position.out_of_board? && position.margin_of_board? && board.piece_at(position).nil? || !board.piece_at(position).nil?  && board.piece_at(position).color != self.color
+          moves.push(position)
+        end
+      end
+      moves 
+    end
+
+    def calculate_moves_to_right_up_diagonal(current_position,board)
+      moves = []
+      position = current_position.clone
+      position.step_right_up_diagonal!
+      unless position.out_of_board?
+        while (!position.margin_of_board? && board.piece_at(position).nil?)
+          cordinate = position.clone
+          moves.push(cordinate)
+          position.step_right_up_diagonal!
+        end
+        if !position.out_of_board? && position.margin_of_board? && board.piece_at(position).nil? || !board.piece_at(position).nil?  && board.piece_at(position).color != self.color
+          moves.push(position)
+        end
+      end
+      moves
+    end
+
+    def calculate_moves_to_left_down_diagonal(current_position, board)
+      moves = []
+      position = current_position.clone
+      position.step_left_down_diagonal!
+      unless position.out_of_board?
+        while (!position.margin_of_board? && board.piece_at(position).nil?)
+          cordinate = position.clone
+          moves.push(cordinate)
+          position.step_left_down_diagonal!
+        end
+        if !position.out_of_board? && position.margin_of_board? && board.piece_at(position).nil? || !board.piece_at(position).nil?  && board.piece_at(position).color != self.color
+          moves.push(position)
+        end
+      end
+      moves
+    end
+
+    def calculate_moves_to_right_down_diagonal(current_position,board)
+      moves = []
+      position = current_position.clone
+      position.step_right_down_diagonal!
+      unless position.out_of_board?
+        while (!position.margin_of_board? && board.piece_at(position).nil?)
+          cordinate = position.clone
+          moves.push(cordinate)
+          position.step_right_down_diagonal!
+        end
+        if !position.out_of_board? && position.margin_of_board? && board.piece_at(position).nil? || !board.piece_at(position).nil?  && board.piece_at(position).color != self.color
+          moves.push(position)
+        end
+      end
+      moves
+    end
+
+
+  end
+
   
 
   class Piece
+    include MoveCalculator
+
     attr_reader :color
 
     def initialize(color)
@@ -199,20 +387,16 @@ module Chess
   class Rook < Piece
     def possible_moves(current_position, board)
       moves = []
-      (0..7).each do |pos|
-        # COLUMN MOVE
-        cordinate = Cordinate.new(current_position.row, pos)
-        piece = board.piece_at(cordinate)
-        break if piece && piece != self
-        moves.push(cordinate)
-      end
-      (0..7).each do |pos|
-        # ROW MOVE
-        cordinate = Cordinate.new(pos, current_position.column)
-        piece = board.piece_at(cordinate)
-        break if piece && piece != self
-        moves.push(cordinate)
-      end
+      # LEFT MOVE
+      moves << calculate_moves_to_left(current_position,board)
+      # RIGHT MOVE
+      moves << calculate_moves_to_right(current_position,board)
+      # UP MOVE
+      moves << calculate_moves_to_up(current_position,board)
+      # DOWN MOVE
+      moves << calculate_moves_to_down(current_position,board)
+
+      moves.flatten!
       moves.reject { |m| m.column == current_position.column && m.row == current_position.row }
       moves
     end
@@ -227,70 +411,24 @@ module Chess
     def possible_moves(current_position, board)
       moves = []
 
-      # COLUMN DOWN MOVE
-      (current_position.column.downto(0)).each do |pos|
-        cordinate = Cordinate.new(current_position.row, pos)
-        piece = board.piece_at(cordinate)
-        break if piece && piece != self
-        moves.push(cordinate)
-      end
-      # COLUMN UP MOVE
-      (current_position.column.upto(8)).each do |pos|
-        cordinate = Cordinate.new(current_position.row, pos)
-        piece = board.piece_at(cordinate)
-        break if piece && piece != self
-        moves.push(cordinate)
-      end
-      # ROW UP MOVE
-      (current_position.column.upto(8)).each do |pos|
-        cordinate = Cordinate.new(pos, current_position.column)
-        piece = board.piece_at(cordinate)
-        break if piece && piece != self
-        moves.push(cordinate)
-      end
+      # LEFT MOVE
+      moves << calculate_moves_to_left(current_position,board)
+      # RIGHT MOVE
+      moves << calculate_moves_to_right(current_position,board)
+      # UP MOVE
+      moves << calculate_moves_to_up(current_position,board)
+      # DOWN MOVE
+      moves << calculate_moves_to_down(current_position,board)
+      # DIAGONAL ESQUERDA UP
+      moves << calculate_moves_to_left_up_diagonal(current_position, board)
+      # DIAGONAL DIREITA UP
+      moves << calculate_moves_to_right_up_diagonal(current_position, board)
+      # DIAGONAL ESQUERDA DOWN
+      moves << calculate_moves_to_left_down_diagonal(current_position, board)
+      # DIAGONAL DIREITA DOWN
+      moves << calculate_moves_to_right_down_diagonal(current_position, board)
 
-      # ROW DOWN MOVE
-      (current_position.column.upto(8)).each do |pos|
-        cordinate = Cordinate.new(pos, current_position.column)
-        piece = board.piece_at(cordinate)
-        break if piece && piece != self
-        moves.push(cordinate)
-      end
-
-      # DIAGONAL DIREITA
-      # DIAGONAL UP MOVE
-      (current_position.column.downto(0)).each do |pos|
-        cordinate = Cordinate.new(pos,pos)
-        piece = board.piece_at(cordinate)
-        break if piece && piece != self
-        moves.push(cordinate)  
-      end
-      # DIAGONAL DOWN MOVE
-      (current_position.column.upto(8)).each do |pos|
-        # DIAGONAL DIREITA
-        cordinate = Cordinate.new(pos,pos)
-        piece = board.piece_at(cordinate)
-        break if piece && piece != self
-        moves.push(cordinate)  
-      end
-      # DIAGONAL ESQUERDA
-      # DIAGONAL UP MOVE
-      (current_position.column.downto(0)).each do |pos|
-        cordinate = Cordinate.new(pos,8-pos)
-        piece = board.piece_at(cordinate)
-        break if piece && piece != self
-        moves.push(cordinate)  
-      end
-      # DIAGONAL DOWN MOVE
-      (current_position.column.upto(8)).each do |pos|
-        # DIAGONAL DIREITA
-        cordinate = Cordinate.new(pos,8-pos)
-        piece = board.piece_at(cordinate)
-        break if piece && piece != self
-        moves.push(cordinate)  
-      end
-      puts current_position.to_s
-      puts (board.empty_cordinates & moves).collect(&:to_s).inspect
+      moves.flatten!
       moves.reject! { |m| m.column == current_position.column && m.row == current_position.row }
       moves
     end
@@ -305,11 +443,16 @@ module Chess
 
     def possible_moves(current_position, board)
       moves = []
-      # DIAGONAL DIREITA
-      (0..7).each do |pos|
-        moves.push(Cordinate.new(pos,pos))  
-        moves.push(Cordinate.new(7-pos,pos))
-      end
+      # DIAGONAL ESQUERDA UP
+      moves << calculate_moves_to_left_up_diagonal(current_position, board)
+      # DIAGONAL DIREITA UP
+      moves << calculate_moves_to_right_up_diagonal(current_position, board)
+      # DIAGONAL ESQUERDA DOWN
+      moves << calculate_moves_to_left_down_diagonal(current_position, board)
+      # DIAGONAL DIREITA DOWN
+      moves << calculate_moves_to_right_down_diagonal(current_position, board)
+
+      moves.flatten!
       moves.reject { |m| m.column == current_position.column && m.row == current_position.row }
       moves
     end
@@ -320,6 +463,8 @@ module Chess
 
   class King < Piece
     def possible_moves(current_position, board)
+      #TODO: CHECK IF ANOTHER PIECE 
+      #TODO: CHECK IF TRESPASS THE PIECE
       moves = []
       # PARA CIMA E PARA BAIXO
       moves.push(Cordinate.new(current_position.row+1,current_position.column))
@@ -333,6 +478,8 @@ module Chess
       # NO EIXO DA DIAGONAL ESQUERDA
       moves.push(Cordinate.new(current_position.row+1,current_position.column-1))
       moves.push(Cordinate.new(current_position.row-1,current_position.column+1))
+
+
       moves
     end
     def letter
@@ -342,19 +489,30 @@ module Chess
 
   class Knight < Piece
     def possible_moves(current_position, board)
+      #TODO: CHECK IF ANOTHER PIECE 
+      #TODO: CHECK IF TRESPASS THE PIECE
       moves = []
       # UP 
-      moves.push(Cordinate.new(current_position.row+2,current_position.column-1))
-      moves.push(Cordinate.new(current_position.row+2,current_position.column+1))
-      # DOWN                                           ,                         )
-      moves.push(Cordinate.new(current_position.row-2,current_position.column-1))
-      moves.push(Cordinate.new(current_position.row-2,current_position.column+1))
+      position = Cordinate.new(current_position.row+2,current_position.column-1)
+      moves.push(position) if board.piece_at(position).nil?  || board.piece_at(position).color != self.color
+
+      position = Cordinate.new(current_position.row+2,current_position.column+1)
+      moves.push(position) if board.piece_at(position).nil?  || board.piece_at(position).color != self.color
+      # DOWN
+      position = Cordinate.new(current_position.row-2,current_position.column-1)
+      moves.push(position) if board.piece_at(position).nil?  || board.piece_at(position).color != self.color
+      position = Cordinate.new(current_position.row-2,current_position.column+1)
+      moves.push(position) if board.piece_at(position).nil?  || board.piece_at(position).color != self.color
       # LEFT                                         ,                         )
-      moves.push(Cordinate.new(current_position.row+1,current_position.column-2))
-      moves.push(Cordinate.new(current_position.row-1,current_position.column-2))
+      position = Cordinate.new(current_position.row+1,current_position.column-2)
+      moves.push(position) if board.piece_at(position).nil?  || board.piece_at(position).color != self.color
+      position = Cordinate.new(current_position.row-1,current_position.column-2)
+      moves.push(position) if board.piece_at(position).nil?  || board.piece_at(position).color != self.color
       # RIGHT                                        ,                         )
-      moves.push(Cordinate.new(current_position.row+1,current_position.column+2))
-      moves.push(Cordinate.new(current_position.row-1,current_position.column+2))
+      position = Cordinate.new(current_position.row+1,current_position.column+2)
+      moves.push(position) if board.piece_at(position).nil?  || board.piece_at(position).color != self.color
+      position = Cordinate.new(current_position.row-1,current_position.column+2)
+      moves.push(position) if board.piece_at(position).nil?  || board.piece_at(position).color != self.color
 
       moves
     end
@@ -364,14 +522,28 @@ module Chess
   end
   class Pawn < Piece
     def possible_moves(current_position, board)
+      #TODO: CHECK IF ANOTHER PIECE 
+      #TODO: CHECK IF TRESPASS THE PIECE
       moves = []
       # UP 
       if self.color == "b"
-        moves.push(Cordinate.new(current_position.row+1, current_position.column))
-        moves.push(Cordinate.new(current_position.row+2, current_position.column))
+        position = Cordinate.new(current_position.row+1, current_position.column)
+        if board.piece_at(position).nil?
+          moves.push(position) 
+          position = Cordinate.new(current_position.row+2, current_position.column)
+          if board.piece_at(position).nil?
+            moves.push(position)
+          end
+        end
       else                                             
-        moves.push(Cordinate.new(current_position.row-1, current_position.column))
-        moves.push(Cordinate.new(current_position.row-2, current_position.column))
+        position = Cordinate.new(current_position.row-1, current_position.column)
+        if board.piece_at(position).nil?
+          moves.push(position) 
+          position = Cordinate.new(current_position.row-2, current_position.column)
+          if board.piece_at(position).nil?
+            moves.push(position)
+          end
+        end
       end
       # DIAGONAL IF WILL KILL SOMEONE
 
@@ -585,5 +757,6 @@ c8 e1
 e3 h2
 f3 h3".each_line do |l|
  move = complex_board.move!(l)
+ puts move.to_s
  complex_board.reset!
 end
