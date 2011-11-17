@@ -1,3 +1,4 @@
+# TODO: FIX WHEN SOME PIECE TRESPASS OTHER
 module Chess
   class Cordinate
     attr_reader :column, :row
@@ -180,7 +181,7 @@ module Chess
     end
 
     def movable_to?(current_position, destination, board)
-      (board.empty_cordinates & possible_moves(current_position)).any? { |m| m == destination } || (!board.piece_at(destination).nil? && board.piece_at(destination).color != self.color && possible_moves(current_position).any? { |m| m == destination })
+      (board.empty_cordinates & possible_moves(current_position, board)).any? { |m| m == destination } || (!board.piece_at(destination).nil? && board.piece_at(destination).color != self.color && possible_moves(current_position,board).any? { |m| m == destination })
     end
 
     def possible_moves(current_position, board)
@@ -196,11 +197,21 @@ module Chess
   end
   
   class Rook < Piece
-    def possible_moves(current_position)
+    def possible_moves(current_position, board)
       moves = []
       (0..7).each do |pos|
-        moves.push(Cordinate.new(current_position.row, pos))
-        moves.push(Cordinate.new(pos, current_position.column))
+        # COLUMN MOVE
+        cordinate = Cordinate.new(current_position.row, pos)
+        piece = board.piece_at(cordinate)
+        break if piece && piece != self
+        moves.push(cordinate)
+      end
+      (0..7).each do |pos|
+        # ROW MOVE
+        cordinate = Cordinate.new(pos, current_position.column)
+        piece = board.piece_at(cordinate)
+        break if piece && piece != self
+        moves.push(cordinate)
       end
       moves.reject { |m| m.column == current_position.column && m.row == current_position.row }
       moves
@@ -213,18 +224,73 @@ module Chess
   end
 
   class Queen < Piece
-    def possible_moves(current_position)
+    def possible_moves(current_position, board)
       moves = []
-      (0..7).each do |pos|
-        moves.push(Cordinate.new(current_position.row, pos)) 
-        moves.push(Cordinate.new(pos, current_position.column)) 
+
+      # COLUMN DOWN MOVE
+      (current_position.column.downto(0)).each do |pos|
+        cordinate = Cordinate.new(current_position.row, pos)
+        piece = board.piece_at(cordinate)
+        break if piece && piece != self
+        moves.push(cordinate)
       end
-      (0..7).each do |pos|
+      # COLUMN UP MOVE
+      (current_position.column.upto(8)).each do |pos|
+        cordinate = Cordinate.new(current_position.row, pos)
+        piece = board.piece_at(cordinate)
+        break if piece && piece != self
+        moves.push(cordinate)
+      end
+      # ROW UP MOVE
+      (current_position.column.upto(8)).each do |pos|
+        cordinate = Cordinate.new(pos, current_position.column)
+        piece = board.piece_at(cordinate)
+        break if piece && piece != self
+        moves.push(cordinate)
+      end
+
+      # ROW DOWN MOVE
+      (current_position.column.upto(8)).each do |pos|
+        cordinate = Cordinate.new(pos, current_position.column)
+        piece = board.piece_at(cordinate)
+        break if piece && piece != self
+        moves.push(cordinate)
+      end
+
+      # DIAGONAL DIREITA
+      # DIAGONAL UP MOVE
+      (current_position.column.downto(0)).each do |pos|
+        cordinate = Cordinate.new(pos,pos)
+        piece = board.piece_at(cordinate)
+        break if piece && piece != self
+        moves.push(cordinate)  
+      end
+      # DIAGONAL DOWN MOVE
+      (current_position.column.upto(8)).each do |pos|
         # DIAGONAL DIREITA
-        moves.push(Cordinate.new(pos,pos))  
-        # DIAGONAL ESQUERDA
-        moves.push(Cordinate.new(pos,7-pos))
+        cordinate = Cordinate.new(pos,pos)
+        piece = board.piece_at(cordinate)
+        break if piece && piece != self
+        moves.push(cordinate)  
       end
+      # DIAGONAL ESQUERDA
+      # DIAGONAL UP MOVE
+      (current_position.column.downto(0)).each do |pos|
+        cordinate = Cordinate.new(pos,8-pos)
+        piece = board.piece_at(cordinate)
+        break if piece && piece != self
+        moves.push(cordinate)  
+      end
+      # DIAGONAL DOWN MOVE
+      (current_position.column.upto(8)).each do |pos|
+        # DIAGONAL DIREITA
+        cordinate = Cordinate.new(pos,8-pos)
+        piece = board.piece_at(cordinate)
+        break if piece && piece != self
+        moves.push(cordinate)  
+      end
+      puts current_position.to_s
+      puts (board.empty_cordinates & moves).collect(&:to_s).inspect
       moves.reject! { |m| m.column == current_position.column && m.row == current_position.row }
       moves
     end
@@ -237,7 +303,7 @@ module Chess
 
   class Bishop < Piece
 
-    def possible_moves(current_position)
+    def possible_moves(current_position, board)
       moves = []
       # DIAGONAL DIREITA
       (0..7).each do |pos|
@@ -253,7 +319,7 @@ module Chess
   end
 
   class King < Piece
-    def possible_moves(current_position)
+    def possible_moves(current_position, board)
       moves = []
       # PARA CIMA E PARA BAIXO
       moves.push(Cordinate.new(current_position.row+1,current_position.column))
@@ -275,7 +341,7 @@ module Chess
   end
 
   class Knight < Piece
-    def possible_moves(current_position)
+    def possible_moves(current_position, board)
       moves = []
       # UP 
       moves.push(Cordinate.new(current_position.row+2,current_position.column-1))
@@ -297,7 +363,7 @@ module Chess
     end
   end
   class Pawn < Piece
-    def possible_moves(current_position)
+    def possible_moves(current_position, board)
       moves = []
       # UP 
       if self.color == "b"
