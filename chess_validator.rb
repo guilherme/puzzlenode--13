@@ -379,29 +379,94 @@ module Chess
   end
 
   class King < Piece
-    #TODO: VERIFY CHECK CONDITION
+
+    def vulnerable?(current_position, board)
+      # verifica se existem inimigos
+      # <=> nas laterais (Rainha, Torre)
+      # LEFT MOVE
+      moves = calculate_moves_to_left(current_position,board)
+      # RIGHT MOVE
+      moves << calculate_moves_to_right(current_position,board)
+      if moves.flatten.any? { |cordinate|  board.piece_at(cordinate)  && (board.piece_at(cordinate).is_a?(Queen) || board.piece_at(cordinate).is_a?(Rook)) && board.piece_at(cordinate).color != self.color   }
+        return true
+      end
+
+      # nas verticais (Rainha, Torre)
+      # UP MOVE
+      moves = calculate_moves_to_up(current_position,board)
+      # DOWN MOVE
+      moves << calculate_moves_to_down(current_position,board)
+      if moves.flatten.any? { |cordinate|  board.piece_at(cordinate)  && (board.piece_at(cordinate).is_a?(Queen) || board.piece_at(cordinate).is_a?(Rook)) && board.piece_at(cordinate).color != self.color   }
+        return true
+      end
+
+      # nas diagonais (Peão, Rainha, Bispo)
+      if self.color == 'w'
+        position = current_position.clone
+        position.step_right_up_diagonal!
+        moves  = [position]
+        position = current_position.clone
+        position.step_right_down_diagonal!
+        moves.push(position)
+        if moves.flatten.any? { |cordinate|  board.piece_at(cordinate)  && (board.piece_at(cordinate).is_a?(Pawn)) && board.piece_at(cordinate).color != self.color   }
+          return true
+        end
+      else
+        position = current_position.clone
+        position.step_left_up_diagonal!
+        moves  = [position]
+        position = current_position.clone
+        position.step_left_down_diagonal!
+        moves.push(position)
+        if moves.flatten.any? { |cordinate|  board.piece_at(cordinate)  && (board.piece_at(cordinate).is_a?(Pawn)) && board.piece_at(cordinate).color != self.color   }
+          return true
+        end
+      end
+
+
+      
+      # DIAGONAL ESQUERDA UP
+      moves = calculate_moves_to_left_up_diagonal(current_position, board)
+      # DIAGONAL DIREITA UP
+      moves << calculate_moves_to_right_up_diagonal(current_position, board)
+      # DIAGONAL ESQUERDA DOWN
+      moves << calculate_moves_to_left_down_diagonal(current_position, board)
+      # DIAGONAL DIREITA DOWN
+      moves << calculate_moves_to_right_down_diagonal(current_position, board)
+      if moves.flatten.any? { |cordinate|  board.piece_at(cordinate)  && (board.piece_at(cordinate).is_a?(Queen) || board.piece_at(cordinate).is_a?(Bishop)) && board.piece_at(cordinate).color != self.color   }
+        return true
+      end
+
+      # na mira dos cavalos
+      knight = Knight.new(self.color)
+      if knight.possible_moves(current_position,board).any? { |cordinate| board.piece_at(cordinate)  && board.piece_at(cordinate).is_a?(Knight) && board.piece_at(cordinate).color != self.color  }
+        return true
+      end
+      return false
+    end
     def possible_moves(current_position, board)
       moves = []
       # PARA CIMA E PARA BAIXO
-        position = current_position.clone; position.step_up!
-        moves.push(position)
-#position = current_position.clone; position.step_down!
-#     moves.push(position)
+      position = current_position.clone; position.step_up!
+      moves.push(position) if !position.out_of_board? && !self.vulnerable?(position,board)
+      position = current_position.clone; position.step_down!
+      moves.push(position) if !position.out_of_board? && !self.vulnerable?(position,board)
       # PARA UM LADO E PARA O OUTRO
-#      position = current_position.clone; position.step_left!
-#      moves.push(position)
-#      position = current_position.clone; position.step_right!
-#      moves.push(position)
+      position = current_position.clone; position.step_left!
+      moves.push(position) if !position.out_of_board? && !self.vulnerable?(position,board)
+      position = current_position.clone; position.step_right!
+      moves.push(position) if !position.out_of_board? && !self.vulnerable?(position,board)
 #      # NO EIXO DA DIAGONAL DIREITA
-#      position = current_position.clone; position.step_right_up_diagonal!
-#      moves.push(position)
-#      position = current_position.clone; position.step_right_down_diagonal!
-#     moves.push(position)
+      position = current_position.clone; position.step_right_up_diagonal!
+      moves.push(position) if !position.out_of_board? && !self.vulnerable?(position,board)
+      position = current_position.clone; position.step_right_down_diagonal!
+      moves.push(position) if !position.out_of_board? && !self.vulnerable?(position,board)
+
 #     # NO EIXO DA DIAGONAL ESQUERDA
-#     position = current_position.clone; position.step_left_up_diagonal!
-#     moves.push(position)
-#     position = current_position.clone; position.step_left_down_diagonal!
-# moves.push(position)
+      position = current_position.clone; position.step_left_up_diagonal!
+      moves.push(position) if !position.out_of_board? && !self.vulnerable?(position,board)
+      position = current_position.clone; position.step_left_down_diagonal!
+      moves.push(position) if !position.out_of_board? && !self.vulnerable?(position,board)
 
       moves
     end
@@ -526,7 +591,3 @@ module Chess
   end
 
 end
-
-
-
-
