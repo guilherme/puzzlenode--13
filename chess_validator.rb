@@ -117,6 +117,7 @@ module Chess
     end
 
     def piece_at(cordinate)
+      return nil if cordinate.out_of_board?
       board[cordinate.row][cordinate.column]
     end
 
@@ -196,142 +197,57 @@ module Chess
 
   module MoveCalculator
 
-    def calculate_moves_to_left(current_position, board)
+
+    def move_towards_direction_without_trespass_a_piece(current_position,board, &block)
       moves = []
       position = current_position.clone
-      position.step_left!
+      yield position
       unless position.out_of_board?
-        while (!position.margin_of_board? && board.piece_at(position).nil?)
+        while (!position.out_of_board? && board.piece_at(position).nil?)
           cordinate = position.clone
           moves.push(cordinate)
-          position.step_left!
+          yield position
         end
-        if !position.out_of_board? && position.margin_of_board? && board.piece_at(position).nil? || !board.piece_at(position).nil?  && board.piece_at(position).color != self.color
+        if board.piece_at(position) && board.piece_at(position).color != self.color
           moves.push(position)
+        else
+          moves.push(position) unless position.out_of_board?
         end
       end
       moves
+    end
+
+    def calculate_moves_to_left(current_position, board)
+      move_towards_direction_without_trespass_a_piece(current_position, board) { |position| position.step_left! }
     end
     
     def calculate_moves_to_right(current_position,board)
-      moves = []
-      position = current_position.clone
-      position.step_right!
-      unless position.out_of_board?
-        while (!position.margin_of_board? && board.piece_at(position).nil?)
-          cordinate = position.clone
-          moves.push(cordinate)
-          position.step_right!
-        end
-        if !position.out_of_board? && position.margin_of_board? && board.piece_at(position).nil? || !board.piece_at(position).nil?  && board.piece_at(position).color != self.color
-          moves.push(position)
-        end
-      end
-      moves
+      move_towards_direction_without_trespass_a_piece(current_position, board) { |position| position.step_right! }
     end
 
     def calculate_moves_to_up(current_position,board)
-      moves = []
-      position = current_position.clone
-      position.step_up!
-      unless position.out_of_board?
-        while (!position.margin_of_board? && board.piece_at(position).nil?)
-          cordinate = position.clone
-          moves.push(cordinate)
-          position.step_up!
-        end
-        if !position.out_of_board? && position.margin_of_board? && board.piece_at(position).nil? || !board.piece_at(position).nil?  && board.piece_at(position).color != self.color
-          moves.push(position)
-        end
-      end
-      moves
+      move_towards_direction_without_trespass_a_piece(current_position, board) { |position| position.step_up! }
     end
 
     def calculate_moves_to_down(current_position,board)
-      moves = []
-      position = current_position.clone
-      position.step_down! 
-      unless position.out_of_board?
-        while (!position.margin_of_board? && board.piece_at(position).nil?)
-          cordinate = position.clone
-          moves.push(cordinate)
-          position.step_down!
-        end
-        if !position.out_of_board? && position.margin_of_board? && board.piece_at(position).nil? || !board.piece_at(position).nil?  && board.piece_at(position).color != self.color
-          moves.push(position)
-        end
-      end
-      moves
+      move_towards_direction_without_trespass_a_piece(current_position, board) { |position| position.step_down! }
     end
 
     def calculate_moves_to_left_up_diagonal(current_position,board)
-      moves = []
-      position = current_position.clone
-      position.step_left_up_diagonal!
-      unless position.out_of_board?
-        while (!position.margin_of_board? && board.piece_at(position).nil?)
-          cordinate = position.clone
-          moves.push(cordinate)
-          position.step_left_up_diagonal!
-        end
-        if !position.out_of_board? && position.margin_of_board? && board.piece_at(position).nil? || !board.piece_at(position).nil?  && board.piece_at(position).color != self.color
-          moves.push(position)
-        end
-      end
-      moves 
+      move_towards_direction_without_trespass_a_piece(current_position, board) { |position| position.step_left_up_diagonal! }
     end
 
     def calculate_moves_to_right_up_diagonal(current_position,board)
-      moves = []
-      position = current_position.clone
-      position.step_right_up_diagonal!
-      unless position.out_of_board?
-        while (!position.margin_of_board? && board.piece_at(position).nil?)
-          cordinate = position.clone
-          moves.push(cordinate)
-          position.step_right_up_diagonal!
-        end
-        if !position.out_of_board? && position.margin_of_board? && board.piece_at(position).nil? || !board.piece_at(position).nil?  && board.piece_at(position).color != self.color
-          moves.push(position)
-        end
-      end
-      moves
+      move_towards_direction_without_trespass_a_piece(current_position, board) { |position| position.step_right_up_diagonal! }
     end
 
     def calculate_moves_to_left_down_diagonal(current_position, board)
-      moves = []
-      position = current_position.clone
-      position.step_left_down_diagonal!
-      unless position.out_of_board?
-        while (!position.margin_of_board? && board.piece_at(position).nil?)
-          cordinate = position.clone
-          moves.push(cordinate)
-          position.step_left_down_diagonal!
-        end
-        if !position.out_of_board? && position.margin_of_board? && board.piece_at(position).nil? || !board.piece_at(position).nil?  && board.piece_at(position).color != self.color
-          moves.push(position)
-        end
-      end
-      moves
+      move_towards_direction_without_trespass_a_piece(current_position, board) { |position| position.step_left_down_diagonal! }
     end
 
     def calculate_moves_to_right_down_diagonal(current_position,board)
-      moves = []
-      position = current_position.clone
-      position.step_right_down_diagonal!
-      unless position.out_of_board?
-        while (!position.margin_of_board? && board.piece_at(position).nil?)
-          cordinate = position.clone
-          moves.push(cordinate)
-          position.step_right_down_diagonal!
-        end
-        if !position.out_of_board? && position.margin_of_board? && board.piece_at(position).nil? || !board.piece_at(position).nil?  && board.piece_at(position).color != self.color
-          moves.push(position)
-        end
-      end
-      moves
+      move_towards_direction_without_trespass_a_piece(current_position, board) { |position| position.step_right_down_diagonal! }
     end
-
 
   end
 
@@ -369,7 +285,7 @@ module Chess
     end
 
     def movable_to?(current_position, destination, board)
-      (board.empty_cordinates & possible_moves(current_position, board)).any? { |m| m == destination } || (!board.piece_at(destination).nil? && board.piece_at(destination).color != self.color && possible_moves(current_position,board).any? { |m| m == destination })
+      (board.empty_cordinates & possible_moves(current_position, board)).any? { |m| m == destination } || (possible_moves(current_position,board).any? { |m| m == destination } && !board.piece_at(destination).nil? && board.piece_at(destination).color != self.color)
     end
 
     def possible_moves(current_position, board)
@@ -395,6 +311,7 @@ module Chess
       moves << calculate_moves_to_up(current_position,board)
       # DOWN MOVE
       moves << calculate_moves_to_down(current_position,board)
+
 
       moves.flatten!
       moves.reject { |m| m.column == current_position.column && m.row == current_position.row }
@@ -462,28 +379,29 @@ module Chess
   end
 
   class King < Piece
+    #TODO: VERIFY CHECK CONDITION
     def possible_moves(current_position, board)
       moves = []
       # PARA CIMA E PARA BAIXO
-      position = current_position.clone; position.step_up!
-      moves.push(position)
-      position = current_position.clone; position.step_down!
-      moves.push(position)
+        position = current_position.clone; position.step_up!
+        moves.push(position)
+#position = current_position.clone; position.step_down!
+#     moves.push(position)
       # PARA UM LADO E PARA O OUTRO
-      position = current_position.clone; position.step_left!
-      moves.push(position)
-      position = current_position.clone; position.step_right!
-      moves.push(position)
-      # NO EIXO DA DIAGONAL DIREITA
-      position = current_position.clone; position.step_right_up_diagonal!
-      moves.push(position)
-      position = current_position.clone; position.step_right_down_diagonal!
-      moves.push(position)
-      # NO EIXO DA DIAGONAL ESQUERDA
-      position = current_position.clone; position.step_left_up_diagonal!
-      moves.push(position)
-      position = current_position.clone; position.step_left_down_diagonal!
-      moves.push(position)
+#      position = current_position.clone; position.step_left!
+#      moves.push(position)
+#      position = current_position.clone; position.step_right!
+#      moves.push(position)
+#      # NO EIXO DA DIAGONAL DIREITA
+#      position = current_position.clone; position.step_right_up_diagonal!
+#      moves.push(position)
+#      position = current_position.clone; position.step_right_down_diagonal!
+#     moves.push(position)
+#     # NO EIXO DA DIAGONAL ESQUERDA
+#     position = current_position.clone; position.step_left_up_diagonal!
+#     moves.push(position)
+#     position = current_position.clone; position.step_left_down_diagonal!
+# moves.push(position)
 
       moves
     end
@@ -526,28 +444,48 @@ module Chess
   end
   class Pawn < Piece
     def possible_moves(current_position, board)
+      # LOOK FOR WRONG MOVES
       moves = []
       # UP 
       if self.color == "b"
-        position = Cordinate.new(current_position.row+1, current_position.column)
-        if board.piece_at(position).nil?
+        position = current_position.clone; position.step_up!
+        if board.piece_at(position).nil? 
           moves.push(position) 
-          position = Cordinate.new(current_position.row+2, current_position.column)
-          if board.piece_at(position).nil?
-            moves.push(position)
+          if current_position.row == 1
+            position = current_position.clone; position.step_up!; position.step_up!
+            if board.piece_at(position).nil?
+              moves.push(position)
+            end
           end
+        end
+        position = current_position.clone; position.step_left_down_diagonal!;
+        if board.piece_at(position) && board.piece_at(position).color != self.color
+          moves.push(position)
+        end
+        position = current_position.clone; position.step_right_down_diagonal!;
+        if board.piece_at(position) && board.piece_at(position).color != self.color
+          moves.push(position)
         end
       else                                             
-        position = Cordinate.new(current_position.row-1, current_position.column)
-        if board.piece_at(position).nil?
+        position = current_position.clone; position.step_down!
+        if board.piece_at(position).nil? 
           moves.push(position) 
-          position = Cordinate.new(current_position.row-2, current_position.column)
-          if board.piece_at(position).nil?
-            moves.push(position)
+          if current_position.row == 6
+            position = current_position.clone; position.step_down!; position.step_down!
+            if board.piece_at(position).nil?
+              moves.push(position)
+            end
           end
         end
+        position = current_position.clone; position.step_left_up_diagonal!;
+        if board.piece_at(position) && board.piece_at(position).color != self.color
+            moves.push(position)
+        end
+        position = current_position.clone; position.step_right_up_diagonal!;
+        if board.piece_at(position) && board.piece_at(position).color != self.color
+          moves.push(position)
+        end
       end
-      # DIAGONAL IF WILL KILL SOMEONE
 
       moves
     end
