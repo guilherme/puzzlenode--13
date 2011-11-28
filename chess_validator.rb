@@ -96,7 +96,7 @@ module Chess
         end
         row += 1
       end
-      raise InvalidBoard, "The board must have eight columns and eight rows, like the chess board.See: http://puzzlenode.com/puzzles/22" if board_model.collect(&:length).any? { |length| length != 8 }
+      raise InvalidBoard, "The board must have eight columns and eight rows, and the pieces must have a specific  format. See: http://puzzlenode.com/puzzles/22" if board_model.collect(&:length).any? { |length| length != 8 }
       Board.new(board_model)
     end
 
@@ -513,7 +513,7 @@ module Chess
     attr_reader :source, :destination
     
 
-    MOVE_REGEXP = /([a-h])([0-8]) ([a-h])([0-8])/
+    MOVE_REGEXP = /^([a-h])([0-8]) ([a-h])([0-8])$/
 
 
     def initialize(source, destination)
