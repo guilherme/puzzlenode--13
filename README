@@ -1,0 +1,44 @@
+Chess Validator.
+Basically the chess validator i've made works  by receiving a board with a initial states, on the text format such a: 
+"bR bN bB bQ bK bB bN bR
+bP bP bP bP bP bP bP bP
+-- -- -- -- -- -- -- --
+-- -- -- -- -- -- -- --
+-- -- -- -- -- -- -- --
+-- -- -- -- -- -- -- --
+wP wP wP wP wP wP wP wP
+wR wN wB wQ wK wB wN wR"
+Which means the positions of "w" pieces (white pieces) and "b" pieces (black pieces), and each peace have his type: P - Pawn, R - Rook, N - Knight, Q - Queen, K - King, B - Bishop. that
+are the pieces on chess.
+To validate the moves you must provide  the board, a move and then check if it's legal on a specific board. Like:
+
+simple_board = Chess::Board.parse!("
+bR bN bB bQ bK bB bN bR
+bP bP bP bP bP bP bP bP
+-- -- -- -- -- -- -- --
+-- -- -- -- -- -- -- --
+-- -- -- -- -- -- -- --
+-- -- -- -- -- -- -- --
+wP wP wP wP wP wP wP wP
+wR wN wB wQ wK wB wN wR")
+
+move = Move.parse("a2 a3")
+puts move.legal?(simple_board) ? "LEGAL" : "ILLEGAL"
+
+# the move.legal? just check if the move is legal, it does not perform the move itself.
+# it calculates the possibility of the move based on the piece capababilities
+# and then return its legality
+
+For debugging reasons i've made the chess board printer, to check if the board is parsed the way we input:
+puts simple_board.to_s
+
+
+On internal level we have a MoveCalculator module which have methods that are reused between ROOK, Queen and Bishop. That are moves that are made with more than one square and which must have
+a special treatment like : check if not passing through a piece, checking if the piece attacked are not the same color, if the attack is possible. 
+The move calculator have an abstract method that only gets the direction of move, if is diagonal (left or up), up or down on the board and them perform it to the moves calculator, and return the possibles moves.
+
+Pieces:
+I've chosed to reuse the code subclassing a type Piece which have the basic information about piece: color, letter. and then beeing more specific on the move possibilities in terms of Cordinates of each piece.
+
+
+Well, i think the code itself is very simple and easy to read. 
