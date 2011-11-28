@@ -9,10 +9,6 @@ wR -- bB wN wP -- -- --
 -- wP bQ -- -- wP -- --
 -- -- -- -- -- wB -- --")
 
-
-
-legal_moves = []
-ilegal_moves = []
 "b2 b3
 f2 b7
 b4 a8
@@ -131,43 +127,6 @@ h2 a5
 c8 e1
 e3 h2
 f3 h3".each_line do |l|
- if ENV['PRINT_BOARD'] == "1"
-   puts complex_board.to_s
- end
  move = complex_board.move!(l)
- if ENV['ASK_LEGAL'] == "1"
-  piece_moved = complex_board.piece_at(move.source)
-  if piece_moved
-    moviment = piece_moved.movable_to?(move.source, move.destination, complex_board) ? 'LEGAL' : 'ILLEGAL'
-  else
-    moviment = 'ILEGAL'
-  end
-  puts "The move: #{move.to_s} was #{moviment}?"
-  move_legal = STDIN.gets.chomp
-  if move_legal == "S" 
-    legal_moves.push(move)
-    puts "Move OK"
-  else
-    ilegal_moves.push(move)
-    puts "Move #{move.to_s} not OK"
-  end
- end
- if ENV['PRINT_MOVES'] == "1"
-  p move.to_s
- end
  complex_board.reset!
 end
-
-if ENV['ASK_LEGAL'] == "1"
-  puts " Movimentos OK"
-  legal_moves.each do |move|
-    puts "#{move.to_s}"
-  end
-  puts " Movimentos Inválidos"
-  ilegal_moves.each do |move|
-    puts "#{move.to_s}"
-  end
-end
-
-
-
