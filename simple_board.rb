@@ -8,7 +8,6 @@ bP bP bP bP bP bP bP bP
 -- -- -- -- -- -- -- --
 wP wP wP wP wP wP wP wP
 wR wN wB wQ wK wB wN wR")
-puts board.to_s
 
 "a2 a3
 a2 a4
@@ -22,6 +21,6 @@ b8 c6
 b8 d7
 e2 e3
 e3 e2".each_line do |l|
- move = board.move!(l)
- board.reset!
+ move = Chess::Move.parse(l)
+ puts move.legal?(board) ? "LEGAL" : "ILLEGAL"
 end

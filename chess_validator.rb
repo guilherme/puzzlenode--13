@@ -516,6 +516,12 @@ module Chess
       self.destination = destination
     end
 
+
+    # THE CORDINATES CAME FROM A FILE IN ASCII REPRESENTATION
+    # like:
+    # a2 => 0 column, 6 row on a matrix 
+    # a3 => 0 column, 5 row on a matrix. because the representation on chess board are different on a MATRIX
+    # see http://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Chess_l45.svg/26px-Chess_l45.svg.png
     def self.parse(move_string)
       parsing = move_string.match(MOVE_REGEXP)
       source = Cordinate.new((8 - parsing[2].to_i),(parsing[1].bytes.first - 97))
