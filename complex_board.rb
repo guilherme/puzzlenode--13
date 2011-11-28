@@ -127,6 +127,7 @@ h2 a5
 c8 e1
 e3 h2
 f3 h3".each_line do |l|
- move = complex_board.move!(l)
+ move = Chess::Move.parse(l)
+ puts move.legal?(complex_board) ? "LEGAL" : "ILLEGAL"
  complex_board.reset!
 end

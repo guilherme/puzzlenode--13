@@ -99,21 +99,12 @@ module Chess
     end
 
     def initialize(model)
-      unless model
-        setup_black
-        setup_white
-      else
-        @board_model = model.clone
-        @board = model
-      end
+      @board_model = model.clone
+      @board = model
     end
 
     def reset!
       @board = nil
-      if @board_model.nil?
-        setup_black
-        setup_white
-      end
     end
 
     def piece_at(cordinate)
@@ -132,26 +123,6 @@ module Chess
       cordinates
     end
     
-    def move!(move)
-      if move.is_a?(String)
-        move = Move.parse(move)
-      end
-      piece = piece_at(move.source)
-      if piece.nil?
-#puts "#{move.to_s} ILEGAL"
-        puts "ILLEGAL"
-      else
-        if piece.movable_to?(move.source, move.destination, self)
-# puts "#{move.to_s} LEGAL"
-         puts "LEGAL"
-        else
-#  puts "#{move.to_s} ILEGAL"
-          puts "ILLEGAL"
-        end
-      end
-      move
-    end
-
     def to_s
       printable = "    a  b  c  d  e  f  g  h\n"
       (0..7).each do |row|
@@ -164,35 +135,6 @@ module Chess
       printable
     end
 
-    private
-
-    def setup_white
-      (0..7).each do |column|
-        board[1][column] = Pawn.new("black") 
-      end
-      board[0][0] = Rook.new("black") # ROOK
-      board[0][1] = Knight.new("black") # KNIGHT
-      board[0][2] = Bishop.new("black") # BISHOP
-      board[0][3] = Queen.new("black")
-      board[0][4] = King.new("black")
-      board[0][5] = Bishop.new("black")
-      board[0][6] = Knight.new("black")
-      board[0][7] = Rook.new("black")
-    end
-
-    def setup_black
-      (0..7).each do |column|
-        board[6][column] = Pawn.new("white") 
-      end
-      board[7][0] = Rook.new("white") # ROOK
-      board[7][1] = Knight.new("white") # KNIGHT
-      board[7][2] = Bishop.new("white") # BISHOP
-      board[7][3] = Queen.new("white")
-      board[7][4] = King.new("white")
-      board[7][5] = Bishop.new("white")
-      board[7][6] = Knight.new("white")
-      board[7][7] = Rook.new("white")
-    end
   end
 
   module MoveCalculator
@@ -583,6 +525,19 @@ module Chess
 
     def to_s
       source.to_s + " " + destination.to_s
+    end
+
+    def legal?(board)
+      piece = board.piece_at(source)
+      if piece.nil?
+        false
+      else
+        if piece.movable_to?(source, destination, board)
+          true
+        else
+          false
+        end
+      end
     end
 
     private
