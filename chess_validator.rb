@@ -76,6 +76,7 @@ module Chess
 
   end
 
+  class InvalidBoard < StandardError; end
   class Board
     PIECE_MATCHER = /([wb][RBQKNP ]|[-])+/
 
@@ -95,6 +96,7 @@ module Chess
         end
         row += 1
       end
+      raise InvalidBoard, "The board must have eight columns and eight rows, like the chess board.See: http://puzzlenode.com/puzzles/22" if board_model.collect(&:length).any? { |length| length != 8 }
       Board.new(board_model)
     end
 
@@ -205,6 +207,7 @@ module Chess
     end
 
     def self.parse!(piece_string)
+      # TODO: raise invalid
       color = piece_string[0].chr
       letter  = piece_string[1].chr
       case letter
@@ -503,7 +506,9 @@ module Chess
    
 
   
+  class InvalidMove < StandardError; end
   class Move
+    
 
     attr_reader :source, :destination
     
@@ -524,6 +529,7 @@ module Chess
     # see http://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Chess_l45.svg/26px-Chess_l45.svg.png
     def self.parse(move_string)
       parsing = move_string.match(MOVE_REGEXP)
+      raise InvalidMove, "Invalid move format. It must be: 'source destination'. Where source and destination are on http://en.wikipedia.org/wiki/Algebraic_chess_notation" if parsing.nil?
       source = Cordinate.new((8 - parsing[2].to_i),(parsing[1].bytes.first - 97))
       destination = Cordinate.new((8 - parsing[4].to_i), (parsing[3].bytes.first - 97))
       move = new(source, destination)
